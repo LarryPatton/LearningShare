@@ -1,0 +1,118 @@
+name: CI/CD - Build Check and Deploy
+
+# 触发条件：推送到 main 或 master 分支
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+# 环境变量
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  # 任务1：代码检查和构建测试
+  build-check:
+    name: 🔍 代码检查和构建测试
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1. 检出代码
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+      
+      # 2. 设置 Node.js 环境
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      # 3. 安装依赖
+      - name: 📦 Install Dependencies
+        run: npm ci
+      
+      # 4. TypeScript 类型检查
+      - name: 🔎 TypeScript Check
+        run: npx tsc --noEmit
+        continue-on-error: false
+      
+      # 5. ESLint 代码检查
+      - name: ✨ ESLint Check
+        run: npm run lint
+        continue-on-error: true
+      
+      # 6. 构建项目
+      - name: 🏗️ Build Project
+        run: npm run build
+      
+      # 7. 上传构建产物（可选）
+      - name: 📤 Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: .next
+          retention-days: 7
+
+  # 任务2：部署到 Vercel（仅在构建成功后执行）
+  deploy:
+    name: 🚀 Deploy to Vercel
+    runs-on: ubuntu-latest
+    needs: build-check  # 依赖于 build-check 任务成功
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    
+    steps:
+      # 1. 检出代码
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+      
+      # 2. 部署信息
+      - name: 📢 Deployment Info
+        run: |
+          echo "🚀 开始部署到 Vercel"
+          echo "📦 仓库: ${{ github.repository }}"
+          echo "🌿 分支: ${{ github.ref_name }}"
+          echo "👤 提交者: ${{ github.actor }}"
+          echo "📝 提交信息: ${{ github.event.head_commit.message }}"
+      
+      # 3. Vercel 自动部署通知
+      - name: ✅ Vercel Auto-Deploy
+        run: |
+          echo "✨ Vercel 将自动检测到这次推送并开始部署"
+          echo "🔗 查看部署状态: https://vercel.com/dashboard"
+          echo "⏱️  通常需要 1-3 分钟完成部署"
+
+  # 任务3：部署状态通知（可选）
+  notify:
+    name: 📬 Deployment Notification
+    runs-on: ubuntu-latest
+    needs: [build-check, deploy]
+    if: always()
+    
+    steps:
+      - name: 📊 Summary
+        run: |
+          echo "========================================="
+          echo "   CI/CD Pipeline Summary"
+          echo "========================================="
+          echo ""
+          if [ "${{ needs.build-check.result }}" == "success" ]; then
+            echo "✅ 代码检查和构建: 成功"
+          else
+            echo "❌ 代码检查和构建: 失败"
+          fi
+          
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            echo "✅ Vercel 部署: 已触发"
+          elif [ "${{ needs.deploy.result }}" == "skipped" ]; then
+            echo "⏭️  Vercel 部署: 跳过 (非主分支)"
+          else
+            echo "❌ Vercel 部署: 失败"
+          fi
+          echo ""
+          echo "========================================="
