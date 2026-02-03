@@ -1,5 +1,4 @@
 'use client';
-import Image from 'next/image';
 import { useState } from 'react';
 
 export function MindMapViewer({ src, title }: { src: string; title?: string }) {
@@ -7,21 +6,36 @@ export function MindMapViewer({ src, title }: { src: string; title?: string }) {
   
   return (
     <>
-      <div className="my-8">
-        {title && <h3 className="text-lg font-semibold mb-3">🗺️ {title}</h3>}
+      <div className="my-12">
+        {title && (
+          <h3 
+            className="text-sm font-medium uppercase tracking-wider mb-4"
+            style={{ color: 'var(--color-text-tertiary)' }}
+          >
+            ◎ {title}
+          </h3>
+        )}
         
         {/* 缩略图 */}
         <div 
-          className="cursor-pointer hover:opacity-90 transition" 
+          className="cursor-pointer group" 
           onClick={() => setIsOpen(true)}
         >
-          <img 
-            src={src} 
-            alt="思维导图" 
-            className="w-full rounded-lg border shadow hover:shadow-lg transition"
-          />
-          <p className="text-sm text-center mt-2 text-gray-600">
-            点击查看大图 🔍
+          <div 
+            className="border overflow-hidden transition-all group-hover:shadow-lg"
+            style={{ borderColor: 'var(--color-border)' }}
+          >
+            <img 
+              src={src} 
+              alt="思维导图" 
+              className="w-full transition-transform duration-300 group-hover:scale-[1.02]"
+            />
+          </div>
+          <p 
+            className="text-xs text-center mt-3 transition-opacity group-hover:opacity-70"
+            style={{ color: 'var(--color-text-tertiary)' }}
+          >
+            点击查看大图
           </p>
         </div>
       </div>
@@ -29,14 +43,17 @@ export function MindMapViewer({ src, title }: { src: string; title?: string }) {
       {/* 全屏弹窗 */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.95)' }}
           onClick={() => setIsOpen(false)}
         >
           <button
-            className="absolute top-4 right-4 text-white text-3xl hover:text-gray-300"
+            className="absolute top-6 right-6 text-white text-2xl hover:opacity-70 transition-opacity"
             onClick={() => setIsOpen(false)}
           >
-            ✕
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
           <img 
             src={src} 

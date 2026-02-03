@@ -15,20 +15,35 @@ export function PDFViewerTrigger({ src, title, slug }: Props) {
   return (
     <>
       {/* 按钮卡片 */}
-      <div className="mb-8 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-200">
-        <div className="flex items-center gap-3 mb-3">
-          <span className="text-3xl">📊</span>
+      <div 
+        className="my-8 p-6 border"
+        style={{ 
+          borderColor: 'var(--color-border)',
+          backgroundColor: 'var(--color-bg-secondary)'
+        }}
+      >
+        <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-bold text-gray-900">PPT 幻灯片</h3>
-            <p className="text-sm text-gray-600">点击按钮查看配套幻灯片</p>
+            <h3 
+              className="text-sm font-medium uppercase tracking-wider mb-1"
+              style={{ color: 'var(--color-text-tertiary)' }}
+            >
+              ◧ PPT 幻灯片
+            </h3>
+            <p 
+              className="text-xs"
+              style={{ color: 'var(--color-text-tertiary)' }}
+            >
+              点击查看配套幻灯片
+            </p>
           </div>
+          <button
+            onClick={() => setIsOpen(true)}
+            className="btn-primary"
+          >
+            查看
+          </button>
         </div>
-        <button
-          onClick={() => setIsOpen(true)}
-          className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-pink-700 transition-all shadow-md hover:shadow-lg"
-        >
-          📄 查看 PPT 幻灯片
-        </button>
       </div>
 
       {/* PDF 查看器（条件渲染） */}

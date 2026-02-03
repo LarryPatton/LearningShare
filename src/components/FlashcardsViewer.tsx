@@ -28,7 +28,14 @@ export function FlashcardsViewer({ src }: { src: string }) {
   }, [src]);
 
   if (loading) {
-    return <div className="text-center py-4">加载中...</div>;
+    return (
+      <div 
+        className="text-center py-8 text-sm"
+        style={{ color: 'var(--color-text-tertiary)' }}
+      >
+        加载中...
+      </div>
+    );
   }
 
   if (cards.length === 0) {
@@ -46,36 +53,80 @@ export function FlashcardsViewer({ src }: { src: string }) {
   };
 
   return (
-    <div className="my-8">
-      <h3 className="text-lg font-semibold mb-4">📝 问答卡片</h3>
+    <div className="my-12">
+      <h3 
+        className="text-sm font-medium uppercase tracking-wider mb-4"
+        style={{ color: 'var(--color-text-tertiary)' }}
+      >
+        ☐ 问答卡片
+      </h3>
       
-      <div className="bg-white border-2 border-blue-200 rounded-lg shadow-lg p-6 md:p-8">
+      <div 
+        className="border p-6 md:p-8"
+        style={{ 
+          borderColor: 'var(--color-border)',
+          backgroundColor: 'var(--color-card-bg)'
+        }}
+      >
         {/* 进度指示 */}
-        <div className="flex justify-between items-center mb-6">
-          <span className="text-sm text-gray-600">
-            卡片 {current + 1} / {cards.length}
+        <div className="flex justify-between items-center mb-8">
+          <span 
+            className="text-xs"
+            style={{ color: 'var(--color-text-tertiary)' }}
+          >
+            {current + 1} / {cards.length}
           </span>
-          <div className="w-48 h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div 
+            className="w-48 h-1 overflow-hidden"
+            style={{ backgroundColor: 'var(--color-border)' }}
+          >
             <div 
-              className="h-full bg-blue-600 transition-all duration-300"
-              style={{ width: `${((current + 1) / cards.length) * 100}%` }}
+              className="h-full transition-all duration-300"
+              style={{ 
+                width: `${((current + 1) / cards.length) * 100}%`,
+                backgroundColor: 'var(--color-text-primary)'
+              }}
             />
           </div>
         </div>
 
         {/* 问题 */}
-        <div className="mb-6">
-          <p className="text-sm text-blue-600 font-semibold mb-2">问题：</p>
-          <p className="text-lg md:text-xl font-medium text-gray-800">
+        <div className="mb-8">
+          <p 
+            className="text-xs uppercase tracking-wider mb-2"
+            style={{ color: 'var(--color-text-tertiary)' }}
+          >
+            问题
+          </p>
+          <p 
+            className="text-lg md:text-xl font-medium"
+            style={{ color: 'var(--color-text-primary)' }}
+          >
             {cards[current].question}
           </p>
         </div>
 
         {/* 答案（可展开） */}
         {showAnswer && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg animate-fade-in">
-            <p className="text-sm text-green-700 font-semibold mb-2">答案：</p>
-            <p className="text-gray-800 leading-relaxed">{cards[current].answer}</p>
+          <div 
+            className="mb-8 p-4 border-l-2"
+            style={{ 
+              borderColor: 'var(--color-text-primary)',
+              backgroundColor: 'var(--color-bg-secondary)'
+            }}
+          >
+            <p 
+              className="text-xs uppercase tracking-wider mb-2"
+              style={{ color: 'var(--color-text-tertiary)' }}
+            >
+              答案
+            </p>
+            <p 
+              className="leading-relaxed"
+              style={{ color: 'var(--color-text-primary)' }}
+            >
+              {cards[current].answer}
+            </p>
           </div>
         )}
 
@@ -83,7 +134,7 @@ export function FlashcardsViewer({ src }: { src: string }) {
         <div className="flex flex-col sm:flex-row gap-3">
           <button
             onClick={() => setShowAnswer(!showAnswer)}
-            className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
+            className="btn-primary flex-1"
           >
             {showAnswer ? '隐藏答案' : '显示答案'}
           </button>
@@ -91,15 +142,15 @@ export function FlashcardsViewer({ src }: { src: string }) {
           <div className="flex gap-2">
             <button
               onClick={prevCard}
-              className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition"
+              className="btn-outline px-4"
             >
-              ← 上一题
+              ←
             </button>
             <button
               onClick={nextCard}
-              className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition"
+              className="btn-outline px-4"
             >
-              下一题 →
+              →
             </button>
           </div>
         </div>

@@ -2,6 +2,253 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 极简专业风格 - 变量系统 */
+:root {
+  /* 浅色主题 */
+  --color-bg: #ffffff;
+  --color-bg-secondary: #fafafa;
+  --color-bg-tertiary: #f5f5f5;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #666666;
+  --color-text-tertiary: #999999;
+  --color-border: #e5e5e5;
+  --color-border-light: #f0f0f0;
+  --color-accent: #000000;
+  --color-accent-hover: #333333;
+  --color-card-bg: #ffffff;
+  --color-card-shadow: rgba(0, 0, 0, 0.08);
+}
+
+.dark {
+  /* 深色主题 */
+  --color-bg: #0a0a0a;
+  --color-bg-secondary: #111111;
+  --color-bg-tertiary: #1a1a1a;
+  --color-text-primary: #fafafa;
+  --color-text-secondary: #a0a0a0;
+  --color-text-tertiary: #666666;
+  --color-border: #2a2a2a;
+  --color-border-light: #1f1f1f;
+  --color-accent: #ffffff;
+  --color-accent-hover: #e0e0e0;
+  --color-card-bg: #111111;
+  --color-card-shadow: rgba(0, 0, 0, 0.5);
+}
+
+/* 基础样式 */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  @apply bg-gray-50 text-gray-900;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif;
+  line-height: 1.7;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 极简按钮样式 */
+.btn-primary {
+  @apply px-6 py-3 bg-black text-white font-medium rounded-none hover:bg-gray-800 transition-colors;
+}
+
+.dark .btn-primary {
+  @apply bg-white text-black hover:bg-gray-200;
+}
+
+.btn-outline {
+  @apply px-6 py-3 border border-black text-black font-medium rounded-none hover:bg-black hover:text-white transition-colors;
+}
+
+.dark .btn-outline {
+  @apply border-white text-white hover:bg-white hover:text-black;
+}
+
+/* 卡片样式 */
+.card {
+  background-color: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 30px var(--color-card-shadow);
+}
+
+/* 分割线 */
+.divider {
+  border-color: var(--color-border);
+}
+
+/* 文章排版样式 - 极简专业 */
+.prose-minimal {
+  @apply max-w-none;
+  color: var(--color-text-primary);
+}
+
+.prose-minimal h1,
+.prose-minimal h2,
+.prose-minimal h3,
+.prose-minimal h4 {
+  color: var(--color-text-primary);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-top: 2.5em;
+  margin-bottom: 1em;
+}
+
+.prose-minimal h1 { @apply text-3xl md:text-4xl; }
+.prose-minimal h2 { @apply text-2xl md:text-3xl; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5em; }
+.prose-minimal h3 { @apply text-xl md:text-2xl; }
+.prose-minimal h4 { @apply text-lg md:text-xl; }
+
+.prose-minimal p {
+  margin-bottom: 1.5em;
+  line-height: 1.8;
+}
+
+.prose-minimal a {
+  color: var(--color-text-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity 0.2s;
+}
+
+.prose-minimal a:hover {
+  opacity: 0.7;
+}
+
+.prose-minimal blockquote {
+  border-left: 3px solid var(--color-text-primary);
+  padding-left: 1.5em;
+  margin: 2em 0;
+  font-style: italic;
+  color: var(--color-text-secondary);
+}
+
+.prose-minimal code {
+  background-color: var(--color-bg-tertiary);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', monospace;
+}
+
+.prose-minimal pre {
+  background-color: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  padding: 1.5em;
+  overflow-x: auto;
+  margin: 2em 0;
+}
+
+.prose-minimal pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.875em;
+}
+
+.prose-minimal ul,
+.prose-minimal ol {
+  padding-left: 1.5em;
+  margin: 1.5em 0;
+}
+
+.prose-minimal li {
+  margin-bottom: 0.5em;
+}
+
+.prose-minimal img {
+  max-width: 100%;
+  height: auto;
+  margin: 2em 0;
+}
+
+.prose-minimal hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 3em 0;
+}
+
+.prose-minimal table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2em 0;
+}
+
+.prose-minimal th,
+.prose-minimal td {
+  border: 1px solid var(--color-border);
+  padding: 0.75em 1em;
+  text-align: left;
+}
+
+.prose-minimal th {
+  background-color: var(--color-bg-secondary);
+  font-weight: 600;
+}
+
+/* 标签样式 */
+.tag {
+  display: inline-block;
+  padding: 0.25em 0.75em;
+  border: 1px solid var(--color-border);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  transition: all 0.2s;
+}
+
+.tag:hover {
+  border-color: var(--color-text-primary);
+  color: var(--color-text-primary);
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
+
+/* 选中文字样式 */
+::selection {
+  background-color: var(--color-text-primary);
+  color: var(--color-bg);
+}
+
+/* 动画 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* 响应式容器 */
+.container-article {
+  @apply max-w-3xl mx-auto px-6;
+}
+
+.container-wide {
+  @apply max-w-6xl mx-auto px-6;
 }

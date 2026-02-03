@@ -34,14 +34,11 @@ export function TableOfContentsDrawer({
   const handleClick = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      // 计算元素距离顶部的距离（考虑浮动导航栏）
-      const yOffset = -100; // 留出更多顶部空间（进度条 + 导航栏）
+      const yOffset = -100;
       const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
       
       window.scrollTo({ top: y, behavior: 'smooth' });
       onClose();
-    } else {
-      console.warn(`Element with id "${id}" not found`);
     }
   };
 
@@ -51,39 +48,64 @@ export function TableOfContentsDrawer({
     <>
       {/* 背景遮罩 */}
       <div
-        className="fixed inset-0 bg-black/50 z-40 transition-opacity duration-300"
+        className="fixed inset-0 z-40 transition-opacity duration-300"
+        style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
         onClick={onClose}
       />
 
       {/* 抽屉内容 */}
       <div
-        className={`fixed top-0 left-0 bottom-0 w-[70%] max-w-[280px] bg-white z-50 shadow-2xl transform transition-transform duration-300 overflow-y-auto ${
+        className={`fixed top-0 left-0 bottom-0 w-[70%] max-w-[320px] z-50 transform transition-transform duration-300 overflow-y-auto ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
+        style={{ backgroundColor: 'var(--color-bg)' }}
       >
         {/* 头部 */}
-        <div className="sticky top-0 bg-white border-b px-4 py-4 z-10">
-          <h3 className="text-lg font-bold text-gray-900 mb-2">📑 文章目录</h3>
+        <div 
+          className="sticky top-0 border-b px-6 py-6 z-10"
+          style={{ 
+            backgroundColor: 'var(--color-bg)',
+            borderColor: 'var(--color-border)'
+          }}
+        >
+          <h3 
+            className="text-sm font-medium uppercase tracking-wider mb-4"
+            style={{ color: 'var(--color-text-primary)' }}
+          >
+            目录
+          </h3>
           
           {/* 阅读进度 */}
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-gray-600">阅读进度</span>
-            <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div className="flex items-center gap-3 text-xs">
+            <span style={{ color: 'var(--color-text-tertiary)' }}>进度</span>
+            <div 
+              className="flex-1 h-1 overflow-hidden"
+              style={{ backgroundColor: 'var(--color-border)' }}
+            >
               <div
-                className="h-full bg-blue-600 transition-all duration-300"
-                style={{ width: `${progress}%` }}
+                className="h-full transition-all duration-300"
+                style={{ 
+                  width: `${progress}%`,
+                  backgroundColor: 'var(--color-text-primary)'
+                }}
               />
             </div>
-            <span className="text-blue-600 font-medium w-10 text-right">
+            <span 
+              className="font-medium w-10 text-right"
+              style={{ color: 'var(--color-text-secondary)' }}
+            >
               {Math.round(progress)}%
             </span>
           </div>
         </div>
 
         {/* 目录列表 */}
-        <nav className="p-4">
+        <nav className="p-6">
           {toc.length === 0 ? (
-            <p className="text-gray-500 text-sm text-center py-8">
+            <p 
+              className="text-sm text-center py-8"
+              style={{ color: 'var(--color-text-tertiary)' }}
+            >
               暂无目录
             </p>
           ) : (
@@ -93,35 +115,32 @@ export function TableOfContentsDrawer({
                   {/* H2 标题 */}
                   <button
                     onClick={() => handleClick(item.id)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                      activeSection === item.id
-                        ? 'bg-blue-100 text-blue-700 font-semibold'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
+                    className="w-full text-left px-3 py-2 text-sm transition-opacity hover:opacity-70"
+                    style={{ 
+                      color: activeSection === item.id 
+                        ? 'var(--color-text-primary)' 
+                        : 'var(--color-text-secondary)',
+                      fontWeight: activeSection === item.id ? 600 : 400
+                    }}
                   >
-                    <span className="flex items-center gap-2">
-                      {activeSection === item.id ? '📍' : '○'}
-                      <span className="line-clamp-2">{item.title}</span>
-                    </span>
+                    <span className="line-clamp-2">{item.title}</span>
                   </button>
 
                   {/* H3 子标题 */}
                   {item.children && item.children.length > 0 && (
-                    <ul className="ml-6 mt-1 space-y-1">
+                    <ul className="ml-4 border-l" style={{ borderColor: 'var(--color-border)' }}>
                       {item.children.map((child) => (
                         <li key={child.id}>
                           <button
                             onClick={() => handleClick(child.id)}
-                            className={`w-full text-left px-3 py-1.5 rounded text-xs transition-colors ${
-                              activeSection === child.id
-                                ? 'text-blue-600 font-medium'
-                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                            }`}
+                            className="w-full text-left px-3 py-1.5 text-xs transition-opacity hover:opacity-70"
+                            style={{ 
+                              color: activeSection === child.id 
+                                ? 'var(--color-text-primary)' 
+                                : 'var(--color-text-tertiary)'
+                            }}
                           >
-                            <span className="flex items-center gap-2">
-                              {activeSection === child.id ? '•' : '◦'}
-                              <span className="line-clamp-2">{child.title}</span>
-                            </span>
+                            <span className="line-clamp-2">{child.title}</span>
                           </button>
                         </li>
                       ))}
@@ -134,12 +153,18 @@ export function TableOfContentsDrawer({
         </nav>
 
         {/* 底部关闭按钮 */}
-        <div className="sticky bottom-0 bg-white border-t p-4">
+        <div 
+          className="sticky bottom-0 border-t p-6"
+          style={{ 
+            backgroundColor: 'var(--color-bg)',
+            borderColor: 'var(--color-border)'
+          }}
+        >
           <button
             onClick={onClose}
-            className="w-full px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
+            className="btn-primary w-full text-sm"
           >
-            ✕ 关闭目录
+            关闭
           </button>
         </div>
       </div>

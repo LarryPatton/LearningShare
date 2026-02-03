@@ -14,10 +14,8 @@ export function ReadingProgressBar() {
       setProgress(Math.min(100, Math.max(0, scrollPercent)));
     };
 
-    // 初始化
     handleScroll();
 
-    // 添加滚动监听（带节流优化）
     let ticking = false;
     const throttledScroll = () => {
       if (!ticking) {
@@ -39,10 +37,16 @@ export function ReadingProgressBar() {
   }, []);
 
   return (
-    <div className="fixed top-0 left-0 right-0 h-0.5 bg-gray-200 z-50">
+    <div 
+      className="fixed top-0 left-0 right-0 h-[2px] z-50"
+      style={{ backgroundColor: 'var(--color-border)' }}
+    >
       <div
-        className="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-150 ease-out"
-        style={{ width: `${progress}%` }}
+        className="h-full transition-all duration-150 ease-out"
+        style={{ 
+          width: `${progress}%`,
+          backgroundColor: 'var(--color-text-primary)'
+        }}
       />
     </div>
   );

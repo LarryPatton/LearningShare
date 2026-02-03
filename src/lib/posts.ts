@@ -12,6 +12,7 @@ export interface PostMetadata {
   slug: string;
   date: string;
   category: string;
+  subcategory?: string;  // 新增：子分类
   tags: string[];
   excerpt: string;
   author: string;
@@ -31,13 +32,65 @@ export interface Post extends PostMetadata {
   htmlContent: string;
 }
 
-// 获取所有文章的 slug
+/**
+ * 递归扫描目录，找到所有包含 index.md 的文章目录
+ * 支持多级分类结构：posts/category/subcategory/article/
+ */
+function findAllArticles(dir: string, basePath: string = ''): string[] {
+  const articles: string[] = [];
+  
+  if (!fs.existsSync(dir)) {
+    return articles;
+  }
+  
+  const items = fs.readdirSync(dir);
+  
+  for (const item of items) {
+    const fullPath = path.join(dir, item);
+    const stat = fs.statSync(fullPath);
+    
+    if (stat.isDirectory()) {
+      // 检查是否是文章目录（包含 index.md）
+      const indexPath = path.join(fullPath, 'index.md');
+      if (fs.existsSync(indexPath)) {
+        // 这是一个文章目录，记录其相对路径
+        const relativePath = basePath ? `${basePath}/${item}` : item;
+        articles.push(relativePath);
+      } else {
+        // 这是一个分类目录，继续递归
+        const relativePath = basePath ? `${basePath}/${item}` : item;
+        articles.push(...findAllArticles(fullPath, relativePath));
+      }
+    }
+  }
+  
+  return articles;
+}
+
+// 获取所有文章的路径（相对于 posts 目录）
 export function getAllPostSlugs() {
-  const fileNames = fs.readdirSync(postsDirectory);
-  return fileNames.filter((fileName) => {
-    const fullPath = path.join(postsDirectory, fileName);
-    return fs.statSync(fullPath).isDirectory();
-  });
+  return findAllArticles(postsDirectory);
+}
+
+/**
+ * 从文章路径中提取分类信息
+ * 例如：coding/design-patterns/lsp-liskov -> { category: 'coding', subcategory: 'design-patterns' }
+ */
+function extractCategoryFromPath(articlePath: string): { category?: string; subcategory?: string } {
+  const parts = articlePath.split('/');
+  
+  if (parts.length === 1) {
+    // 旧结构：直接在 posts 下，没有分类
+    return {};
+  } else if (parts.length === 2) {
+    // 一级分类：posts/coding/article
+    return { category: parts[0] };
+  } else if (parts.length >= 3) {
+    // 二级分类：posts/coding/design-patterns/article
+    return { category: parts[0], subcategory: parts[1] };
+  }
+  
+  return {};
 }
 
 // 根据 slug 获取文章完整数据
@@ -47,6 +100,15 @@ export async function getPostBySlug(slug: string): Promise<Post> {
 
   // 解析 Front Matter
   const { data, content } = matter(fileContents);
+
+  // 从路径中提取分类信息（如果 frontmatter 中没有）
+  const pathCategory = extractCategoryFromPath(slug);
+  if (!data.category && pathCategory.category) {
+    data.category = pathCategory.category;
+  }
+  if (!data.subcategory && pathCategory.subcategory) {
+    data.subcategory = pathCategory.subcategory;
+  }
 
   // 确保 date 是字符串格式
   if (data.date instanceof Date) {
@@ -62,6 +124,7 @@ export async function getPostBySlug(slug: string): Promise<Post> {
 
   return {
     ...(data as PostMetadata),
+    slug,  // 确保 slug 被设置
     content,
     htmlContent,
   };
@@ -85,4 +148,43 @@ export function getResourcePath(slug: string, resource: string): string | null {
     return `/content/posts/${slug}/${resource}`;
   }
   return null;
+}
+
+/**
+ * 根据分类获取文章列表
+ */
+export async function getPostsByCategory(category: string, subcategory?: string): Promise<Post[]> {
+  const allPosts = await getAllPosts();
+  
+  return allPosts.filter(post => {
+    if (subcategory) {
+      return post.category === category && post.subcategory === subcategory;
+    }
+    return post.category === category;
+  });
+}
+
+/**
+ * 获取所有分类
+ */
+export function getAllCategories(): { category: string; subcategories: string[] }[] {
+  const slugs = getAllPostSlugs();
+  const categoryMap = new Map<string, Set<string>>();
+  
+  slugs.forEach(slug => {
+    const { category, subcategory } = extractCategoryFromPath(slug);
+    if (category) {
+      if (!categoryMap.has(category)) {
+        categoryMap.set(category, new Set());
+      }
+      if (subcategory) {
+        categoryMap.get(category)!.add(subcategory);
+      }
+    }
+  });
+  
+  return Array.from(categoryMap.entries()).map(([category, subcategories]) => ({
+    category,
+    subcategories: Array.from(subcategories),
+  }));
 }

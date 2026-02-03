@@ -1,16 +1,22 @@
 ---
+# 基本信息
 title: 在代码中，为什么说"正方形是矩形"是个谎言？里氏替换原则（LSP）带来的5个惊人启示
-slug: lsp-liskov-substitution-principle
+slug: lsp-liskov
 date: 2024-01-15
-category: 软件设计
-tags: [设计原则, SOLID, 面向对象, 软件架构]
-excerpt: 深入探讨里氏替换原则（LSP），揭示为何"正方形是矩形"在代码世界中是个谎言，以及如何避免常见的设计陷阱。
 author: CodeMaster
 
-# 封面图
-cover: cover.png
+# 分类
+category: coding
+subcategory: design-patterns
+tags: [设计原则, SOLID, 面向对象, 软件架构]
 
-# 附加资源
+# 内容描述
+excerpt: 深入探讨里氏替换原则（LSP），揭示为何"正方形是矩形"在代码世界中是个谎言，以及如何避免常见的设计陷阱。
+difficulty: intermediate
+readingTime: 15
+
+# 资源
+cover: cover.png
 resources:
   mindmap: mindmap.png
   slides: slides.pdf
@@ -18,7 +24,7 @@ resources:
   video: video.mp4
   audio: audio.m4a
 
-# SEO 优化
+# SEO
 keywords: 里氏替换原则, LSP, SOLID原则, 软件设计, 设计模式
 ---
 

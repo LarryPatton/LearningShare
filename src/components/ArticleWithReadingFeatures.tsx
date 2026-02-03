@@ -15,9 +15,8 @@ export function ArticleWithReadingFeatures({ htmlContent }: Props) {
   const [showFloatingNav, setShowFloatingNav] = useState(false);
   const [toc, setToc] = useState<any[]>([]);
 
-  // 在渲染前给 HTML 字符串添加 ID（服务端和客户端都执行）
+  // 在渲染前给 HTML 字符串添加 ID
   const htmlWithIds = useMemo(() => {
-    // 在 HTML 字符串中直接添加 ID
     let index = 0;
     return htmlContent.replace(/<(h[23])>(.*?)<\/\1>/gi, (match, tag, content) => {
       const cleanText = content.replace(/<[^>]*>/g, '').trim();
@@ -34,17 +33,15 @@ export function ArticleWithReadingFeatures({ htmlContent }: Props) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
-    // 延迟提取，确保 DOM 已更新
     const timer = setTimeout(() => {
-      const extracted = extractTableOfContents('.prose');
-      console.log('Extracted TOC:', extracted);
+      const extracted = extractTableOfContents('.prose-minimal');
       setToc(extracted);
     }, 100);
     
     return () => clearTimeout(timer);
   }, [htmlWithIds]);
 
-  // 扁平化目录（用于滚动监听）
+  // 扁平化目录
   const flatToc = useMemo(() => flattenToc(toc), [toc]);
   const headingIds = useMemo(() => flatToc.map(item => item.id), [flatToc]);
 
@@ -54,7 +51,7 @@ export function ArticleWithReadingFeatures({ htmlContent }: Props) {
   // 监听当前章节
   const activeSection = useActiveSection(headingIds);
 
-  // 当前章节标题（用于显示在浮动导航栏）
+  // 当前章节标题
   const currentSectionTitle = useMemo(() => {
     const item = flatToc.find(item => item.id === activeSection);
     return item?.title || '';
@@ -77,33 +74,51 @@ export function ArticleWithReadingFeatures({ htmlContent }: Props) {
 
       {/* 浮动导航栏（滚动后出现） */}
       {showFloatingNav && (
-        <div className="fixed top-0.5 left-0 right-0 bg-white/95 backdrop-blur-sm shadow-md z-40 transition-all duration-300">
-          <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div 
+          className="fixed top-16 left-0 right-0 z-40 transition-all duration-300 border-b"
+          style={{ 
+            backgroundColor: 'var(--color-bg)',
+            borderColor: 'var(--color-border)'
+          }}
+        >
+          <div className="max-w-3xl mx-auto px-6 py-3 flex items-center justify-between">
             {/* 目录按钮 */}
             <button
               onClick={() => setShowDrawer(true)}
-              className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600 transition-colors"
+              className="flex items-center gap-2 text-sm transition-opacity hover:opacity-70"
+              style={{ color: 'var(--color-text-secondary)' }}
             >
-              <span className="text-xl">☰</span>
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
               <span className="hidden sm:inline">目录</span>
             </button>
 
             {/* 当前章节名称 */}
-            <div className="flex-1 mx-4 text-center text-sm text-gray-600 truncate">
-              {currentSectionTitle || '文章阅读中'}
+            <div 
+              className="flex-1 mx-4 text-center text-sm truncate"
+              style={{ color: 'var(--color-text-tertiary)' }}
+            >
+              {currentSectionTitle || ''}
             </div>
 
             {/* 进度和回顶部 */}
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-blue-600 font-medium">
+            <div className="flex items-center gap-4">
+              <span 
+                className="text-xs font-medium"
+                style={{ color: 'var(--color-text-tertiary)' }}
+              >
                 {Math.round(progress)}%
               </span>
               <button
                 onClick={scrollToTop}
-                className="text-xl text-gray-700 hover:text-blue-600 transition-colors"
+                className="transition-opacity hover:opacity-70"
+                style={{ color: 'var(--color-text-secondary)' }}
                 title="回到顶部"
               >
-                ↑
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
               </button>
             </div>
           </div>
@@ -121,7 +136,7 @@ export function ArticleWithReadingFeatures({ htmlContent }: Props) {
 
       {/* 文章内容 */}
       <div
-        className="prose prose-lg max-w-none mb-8"
+        className="prose-minimal mb-8"
         dangerouslySetInnerHTML={{ __html: htmlWithIds }}
       />
     </>
