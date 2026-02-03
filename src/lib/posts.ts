@@ -17,6 +17,8 @@ export interface PostMetadata {
   excerpt: string;
   author: string;
   cover?: string;
+  readingTime?: number;  // 阅读时间（分钟）
+  difficulty?: string;   // 难度级别
   resources?: {
     mindmap?: string;
     slides?: string;
